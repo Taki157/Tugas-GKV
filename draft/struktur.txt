@@ -1,0 +1,13 @@
+Mini Robot R.E.P.O:
+1. Kepala
+    - Kubah
+    - Mata
+        - Pupil
+2. Badan
+    - Tabung
+3. Lengan
+    - Sendi Lengan
+    - Kerucut Lengan
+    - Setengah Lingkaran Lengan
+4. Kaki
+    - Kerucut
