@@ -18,27 +18,55 @@ float toRadians(float deg) {
     return deg * 3.1415926f / 180.0f;
 }
 
-int viewMode = 'o'; // Default view mode
+char viewMode = 'o';          // default orthographic
+char perspectiveType = '1';   // default ke 1 titik hilang
+
 
 void setProjection() {
-    // Pastikan viewport sesuai dengan ukuran window
-    glViewport(0, 0, 800, 800);  // windowWidth dan windowHeight harus diatur sesuai ukuran window
+    glViewport(0, 0, 800, 800);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    // Tentukan proyeksi berdasarkan mode tampilan
     if (viewMode == 'o') {
         // Mode orthographic
         glOrtho(-5, 5, -5, 5, -10, 10);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
     } else if (viewMode == 'p') {
-        // Mode perspective
+        // Mode perspective umum
         gluPerspective(60.0, 1.0, 1.0, 100.0);
-    }
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        // Nested switch untuk tipe titik hilang
+        switch (perspectiveType) {
+            case '1':
+                gluLookAt(0, 0, 10,   // 1 titik hilang (di depan)
+                          0, 0, 0,
+                          0, 1, 0);
+                break;
+            case '2':
+                gluLookAt(10, 0, 10,  // 2 titik hilang (kiri-kanan)
+                          0, 0, 0,
+                          0, 1, 0);
+                break;
+            case '3':
+                gluLookAt(10, 10, 10, // 3 titik hilang (kiri-kanan-atas)
+                          0, 0, 0,
+                          0, 1, 0);
+                break;
+            default:
+                // Default camera position (jika tidak ditekan 1/2/3)
+                gluLookAt(5, 5, 5,
+                          0, 0, 0,
+                          0, 1, 0);
+                break;
+        }
+    }
 }
+
 
 void init() {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -199,11 +227,20 @@ void motion(int x, int y) {
 }
 
 void keyboard(unsigned char key, int x, int y) {
-    if (key == 'o' || key == 'p') {
-        viewMode = key;
+    if (key == 'o') {
+        viewMode = 'o';
         glutPostRedisplay();
+    } else if (key == 'p') {
+        viewMode = 'p';
+        glutPostRedisplay();
+    } else if (key == '1' || key == '2' || key == '3') {
+        if (viewMode == 'p') {
+            perspectiveType = key;  // hanya berlaku saat di mode perspektif
+            glutPostRedisplay();
+        }
     }
 }
+
 
 // -----------------------------------------------------------------
 void drawBody(float radius, float height, int slices, int stacks) {
